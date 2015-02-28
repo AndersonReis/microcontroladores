@@ -1,0 +1,128 @@
+
+########CÓDIGO EM FUNCIONAMENTO DO DHT11 E SD CARD .. GERANDO LOG EM UM ARQUIVO EM TXT  #########
+
+#include <SD.h>
+#include <dht.h>
+
+#define sensor A0 // porta do sensor
+dht DHT; //cria objeto DHT
+
+File myFile;
+
+void setup()
+{
+  Serial.begin(9600);
+  while (!Serial) {
+
+  }
+  Serial.print("Inicializando SD card...");
+  pinMode(10, OUTPUT);
+
+  if (!SD.begin(4)) {
+    Serial.println("Falha na inicializacao!");
+    return;
+  }
+  Serial.println("inicializacao concluida.");
+
+}
+
+void loop()
+{
+  
+
+  DHT.read11(sensor);
+  
+  myFile = SD.open("test.txt", FILE_WRITE);
+
+  if (myFile) {
+    myFile.print("LOG: ");
+    myFile.print("Umidade->");
+    myFile.print(DHT.humidade);
+    myFile.print("%  - ");
+
+    myFile.print("Temperatura->");
+    myFile.print(DHT.temperatura);
+    myFile.println(" C");
+
+    myFile.close();
+    Serial.println("gravando ...");
+  } 
+  else
+  {    
+    Serial.println("error opening test.txt");    
+  }
+  delay(1000);
+}
+
+
+
+-----------------------------------------------------------------------------
+#include <SD.h>
+#include <dht.h>
+
+#define sensor A0 // porta do sensor
+dht DHT; //cria objeto DHT
+
+#define led_alrm  3
+
+File myFile;
+
+void setup()
+{
+  pinMode(led_alrm, OUTPUT);
+  Serial.begin(9600);
+  while (!Serial) {
+
+  }
+  Serial.print("Inicializando SD card...");
+  pinMode(10, OUTPUT);
+
+  if (!SD.begin(4)) {
+    Serial.println("Falha na inicializacao!");
+    return;
+  }
+  Serial.println("inicializacao concluida.");
+
+
+}
+
+void loop()
+{
+
+
+  DHT.read11(sensor);
+
+  myFile = SD.open("test.txt", FILE_WRITE);
+
+  if (myFile) {
+    myFile.print("LOG: ");
+    myFile.print("Umidade->");
+    myFile.print(DHT.humidade);
+    Serial.println(DHT.humidade);
+    myFile.print("%  - ");
+
+    myFile.print("Temperatura->");
+    myFile.print(DHT.temperatura);
+    Serial.println(DHT.temperatura);
+        
+    myFile.close();
+    Serial.println("gravando ...");
+  } 
+  else
+  {    
+    Serial.println("error opening test.txt");    
+  }
+
+
+  if((DHT.temperatura > 30)&&(DHT.humidade<40)){
+    digitalWrite(led_alrm, HIGH);  
+  }
+
+  delay(1000);
+}
+
+
+
+
+
+
